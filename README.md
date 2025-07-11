@@ -26,30 +26,32 @@ student-dropout-prediction/
 │
 ├── README.md
 ├── requirements.txt
-├── LICENSE
 │
 ├── data/
-│   ├── example_input.csv            # Template file (no real data)
-│   └── README.md                    # Explanation of input variables
+│   ├── 2024_example_input.csv            # Sample data (Anonymous)
+│   ├── dropout_status.xslx            	  # Sample data (Anonymous)
+│   ├── program_change_map.xslx           # Sample data (Anonymous)
+│   ├── area_code_location_map.xslx       # Real data from Mexico
+│   └── README.md                         # Explanation of input variables
 │
 ├── notebooks/
-│   ├── 1_preparar_dataframe.ipynb
-│   ├── 2_normalizacion_variables.ipynb
-│   ├── 3_creacion_variables.ipynb
-│   ├── 4_comparacion_logreg_rf.ipynb
-│   ├── 5_comparacion_rf_xgb.ipynb
-│   ├── 6_modelo_xgboost_final.ipynb
-│   ├── 7_aplicacion_modelo.ipynb
-│   └── 8_graficos.ipynb
+│   ├── 1_prepare_dataframe.ipynb
+│   ├── 2_normalize_variables.ipynb
+│   ├── 3_create_variables.ipynb
+│   ├── 4_model_comparison.ipynb
+│   ├── 5_compare_logreg_rf.ipynb
+│   ├── 6_compare_rf_xgb.ipynb
+│   ├── 7_train_xgboost_model.ipynb
+│   ├── 8_model_application.ipynb
+│   ├── 9_visualizations.ipynb
+│   └── README.md
 │
-├── models/
-│   └── xgboost_model.pkl            # Trained model (serialized)
+├── model/
+│   └── xgboost_model.joblib              # Trained model (bundle)
 │
 └── src/
-    ├── train_model.py
     ├── predict.py
-    ├── preprocessing.py
-    └── visualization.py
+    └── preprocessing.py
 ```
 
 ---
@@ -80,18 +82,26 @@ pip install -r requirements.txt
 
 ## How to Use
 
-### Train the model
+### Prepare your input data
 
-1. Prepare your dataset with the same structure as `example_input.csv`.
-2. Open and run `6_modelo_xgboost_final.ipynb` or use `src/train_model.py`.
+1. Ensure your input file matches the structure of data/2024_example_input.csv. If working with a new cohort (e.g., 2025), follow the same column format.
+2. To clean and transform the raw input file, open and run python src/preprocessing.py --input data/2024_example_input.csv --output data/preprocessed.csv
 
-### Apply model to new students
+This script will:
+- Clean and format the data
+- Apply LADA mapping and program grouping
+- Normalize selected variables
+- Create composite features and flags
 
-- Use `7_aplicacion_modelo.ipynb` or `src/predict.py`.
+### Use the Trained Model for Predictions 
 
-### Generate graphics
+- Open and run python src/predict.py --input data/preprocessed.csv --model models/xgboost_model_f1op.joblib --output results/predictions.csv
 
-- Run `8_graficos.ipynb` or call visualization functions in `src/visualization.py`.
+The trained model should be a `.joblib` file containing a dictionary with the following keys:
+- 'model': trained XGBoost model
+- 'features': list of selected features
+- 'threshold': optimal decision threshold
+- 'scaler': fitted scaler used in preprocessing
 
 ---
 
@@ -101,9 +111,15 @@ You must provide your own student dataset. See `data/README.md` for a list of re
 
 ---
 
+## Notebooks
+
+The notebooks/ folder contains all the exploratory, training, and evaluation notebooks used throughout the model development process, including data preparation, model comparison, final training, prediction, and visualization.
+
+---
+
 ## Ethical & Usage Statement
 
-- This repository shares **only simulated data**.
+- This repository shares **only example data**.
 - No student-identifiable information is included.
 - The use of this model should follow ethical guidelines regarding data governance, fairness, and non-discrimination.
 
